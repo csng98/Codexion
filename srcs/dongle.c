@@ -6,7 +6,7 @@
 /*   By: csekakul <csekakul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/14 09:06:01 by csekakul          #+#    #+#             */
-/*   Updated: 2026/08/19 12:07:36 by csekakul         ###   ########.fr       */
+/*   Updated: 2026/08/19 14:31:32 by csekakul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ static void	grab_single_dongle(t_coder *coder, t_dongle *dongle)
 	long long	key;
 	t_request	top;
 
-	if (coder->data->scheduler == SCHED_FIFO)
+	if (coder->data->scheduler == SCHEDULER_FIFO)
 		key = get_time_ms();
 	else
 		key = coder->last_compile_start + coder->data->time_to_burnout;
