@@ -6,7 +6,7 @@
 /*   By: csekakul <csekakul@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/08/14 09:06:01 by csekakul          #+#    #+#             */
-/*   Updated: 2026/08/19 14:31:32 by csekakul         ###   ########.fr       */
+/*   Updated: 2026/08/20 08:39:18 by csekakul         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,4 +76,38 @@ static void	grab_single_dongle(t_coder *coder, t_dongle *dongle)
 	safe_print(coder->data, coder->id, "has taken a dongle");
 }
 
+void	acquire_dongles(t_coder *coder)
+{
+	t_dongle	*first;
+	t_dongle	*second;
 
+	if (coder->left_dongle->id < coder->right_dongle->id)
+	{
+		first = coder->left_dongle;
+		second = coder->right_dongle;
+	}
+	else
+	{
+		first = coder->right_dongle;
+		second = coder->left_dongle;
+	}
+	grab_single_dongle(coder, first);
+	grab_single_dongle(coder, second);
+}
+
+void	release_dongles(t_coder *coder)
+{
+	long long	cooldown_end;
+
+	cooldown_end = get_time_ms() + coder->data->dongle_cooldown;
+	pthread_mutex_lock(&coder->left_dongle->mutex);
+	coder->left_dongle->is_in_use = 0;
+	coder->left_dongle->available_at = cooldown_end;
+	pthread_cond_broadcast(&coder->left_dongle->cond);
+	pthread_mutex_unlock(&coder->left_dongle->mutex);
+	pthread_mutex_lock(&coder->right_dongle->mutex);
+	coder->right_dongle->is_in_use = 0;
+	coder->right_dongle->available_at = cooldown_end;
+	pthread_cond_broadcast(&coder->right_dongle->cond);
+	pthread_mutex_unlock(&coder->right_dongle->mutex);
+}
